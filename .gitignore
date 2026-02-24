@@ -47,3 +47,5 @@ next-env.d.ts
 
 # screenshots
 *.png
+!public/icon-*.png
+!public/apple-touch-icon.png
