@@ -45,11 +45,17 @@ export function DayDetailSheet({
   medicines,
 }: DayDetailSheetProps) {
   // 全お薬×全タイミングの一覧を作成
+  // 停止中の薬はその日に実際の服用記録がある場合のみ表示
   const items: CheckItem[] = [];
   if (date) {
     for (const timing of TIMING_ORDER) {
       for (const medicine of medicines) {
         if (!medicine.timings.includes(timing)) continue;
+        const hasRecord = record?.checks.some(
+          c => c.medicineId === medicine.id && c.timing === timing
+        ) ?? false;
+        // 停止中の薬はその日の記録がなければスキップ
+        if (medicine.suspended && !hasRecord) continue;
         const taken = record?.checks.some(
           c => c.medicineId === medicine.id && c.timing === timing && c.taken
         ) ?? false;

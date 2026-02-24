@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Medicine } from '@/lib/types';
 import * as storage from '@/lib/storage';
 
@@ -63,16 +63,32 @@ export function useMedicines() {
     storage.saveRecords(records);
   }, []);
 
+  const suspendMedicine = useCallback((id: string) => {
+    setMedicines(prev => prev.map(m => m.id === id ? { ...m, suspended: true } : m));
+  }, []);
+
+  const resumeMedicine = useCallback((id: string) => {
+    setMedicines(prev => prev.map(m => m.id === id ? { ...m, suspended: false } : m));
+  }, []);
+
+  const activeMedicines = useMemo(
+    () => medicines.filter(m => !m.suspended),
+    [medicines]
+  );
+
   const getMedicineById = useCallback((id: string) => {
     return medicines.find(m => m.id === id);
   }, [medicines]);
 
   return {
     medicines,
+    activeMedicines,
     isLoaded,
     addMedicine,
     updateMedicine,
     deleteMedicine,
+    suspendMedicine,
+    resumeMedicine,
     getMedicineById,
   };
 }

@@ -21,7 +21,7 @@ function formatToday(): { dateKey: string; display: string } {
 }
 
 export default function HomePage() {
-  const { medicines, isLoaded: medLoaded } = useMedicines();
+  const { activeMedicines, isLoaded: medLoaded } = useMedicines();
   const { toggleCheck, getTodayRecord, isLoaded: recLoaded } = useRecords();
 
   const isLoaded = medLoaded && recLoaded;
@@ -30,7 +30,7 @@ export default function HomePage() {
   const checks = todayRecord?.checks ?? [];
 
   // サマリー計算: 今日飲むべき総数と服用済み数
-  const totalExpected = medicines.reduce((sum, m) => sum + m.timings.length, 0);
+  const totalExpected = activeMedicines.reduce((sum, m) => sum + m.timings.length, 0);
   const totalTaken = checks.filter(c => c.taken).length;
 
   if (!isLoaded) {
@@ -43,7 +43,7 @@ export default function HomePage() {
       <p className="text-xs text-muted-foreground">{display}</p>
       <h1 className="mt-1 text-lg font-semibold">今日の服薬</h1>
 
-      {medicines.length === 0 ? (
+      {activeMedicines.length === 0 ? (
         /* 空状態 */
         <div className="mt-20 flex flex-col items-center gap-4 text-center">
           <div className="flex size-16 items-center justify-center rounded-full bg-secondary">
@@ -96,7 +96,7 @@ export default function HomePage() {
               <TimingSection
                 key={timing}
                 timing={timing}
-                medicines={medicines}
+                medicines={activeMedicines}
                 checks={checks}
                 onToggle={(medicineId, t) => toggleCheck(dateKey, medicineId, t)}
               />

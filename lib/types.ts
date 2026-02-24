@@ -6,6 +6,7 @@ export interface Medicine {
   timings: TimingSlot[];
   memo: string;
   createdAt: string;
+  suspended?: boolean;
 }
 
 export interface Check {

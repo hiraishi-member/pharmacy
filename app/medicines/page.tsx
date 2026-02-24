@@ -18,9 +18,11 @@ import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicines } from '@/hooks/useMedicines';
 
 export default function MedicinesPage() {
-  const { medicines, isLoaded, deleteMedicine } = useMedicines();
+  const { medicines, activeMedicines, isLoaded, deleteMedicine, suspendMedicine, resumeMedicine } = useMedicines();
   const router = useRouter();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const suspendedMedicines = medicines.filter(m => m.suspended);
 
   const targetMedicine = deleteTarget
     ? medicines.find(m => m.id === deleteTarget)
@@ -70,16 +72,38 @@ export default function MedicinesPage() {
           </Button>
         </div>
       ) : (
-        <div className="mt-4 space-y-3">
-          {medicines.map(medicine => (
-            <MedicineCard
-              key={medicine.id}
-              medicine={medicine}
-              onEdit={() => router.push(`/medicines/edit?id=${medicine.id}`)}
-              onDelete={() => setDeleteTarget(medicine.id)}
-            />
-          ))}
-        </div>
+        <>
+          {/* アクティブなお薬 */}
+          <div className="mt-4 space-y-3">
+            {activeMedicines.map(medicine => (
+              <MedicineCard
+                key={medicine.id}
+                medicine={medicine}
+                onEdit={() => router.push(`/medicines/edit?id=${medicine.id}`)}
+                onDelete={() => setDeleteTarget(medicine.id)}
+                onSuspend={() => suspendMedicine(medicine.id)}
+              />
+            ))}
+          </div>
+
+          {/* 停止中のお薬 */}
+          {suspendedMedicines.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-sm font-semibold text-muted-foreground">停止中のお薬</h2>
+              <div className="mt-3 space-y-3">
+                {suspendedMedicines.map(medicine => (
+                  <MedicineCard
+                    key={medicine.id}
+                    medicine={medicine}
+                    onEdit={() => router.push(`/medicines/edit?id=${medicine.id}`)}
+                    onDelete={() => setDeleteTarget(medicine.id)}
+                    onResume={() => resumeMedicine(medicine.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* 削除確認ダイアログ */}
