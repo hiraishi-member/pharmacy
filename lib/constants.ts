@@ -17,6 +17,7 @@ export const TIMING_ORDER: TimingSlot[] = ['morning', 'noon', 'evening', 'bedtim
 export const STORAGE_KEYS = {
   MEDICINES: 'medicines',
   RECORDS: 'records',
+  ONBOARDING_COMPLETED: 'onboarding_completed',
 } as const;
 
 /** ローカルタイムゾーンで YYYY-MM-DD 文字列を生成 */

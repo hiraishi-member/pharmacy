@@ -1,12 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Pill, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Onboarding } from '@/components/Onboarding';
 import { TimingSection } from '@/components/TimingSection';
 import { useMedicines } from '@/hooks/useMedicines';
 import { useRecords } from '@/hooks/useRecords';
-import { TIMING_ORDER, toDateKey } from '@/lib/constants';
+import { STORAGE_KEYS, TIMING_ORDER, toDateKey } from '@/lib/constants';
 
 function formatToday(): { dateKey: string; display: string } {
   const now = new Date();
@@ -24,7 +26,14 @@ export default function HomePage() {
   const { activeMedicines, isLoaded: medLoaded } = useMedicines();
   const { toggleCheck, getTodayRecord, isLoaded: recLoaded } = useRecords();
 
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const isLoaded = medLoaded && recLoaded;
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const done = localStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETED);
+    if (!done) setShowOnboarding(true);
+  }, [isLoaded]);
   const { dateKey, display } = formatToday();
   const todayRecord = getTodayRecord();
   const checks = todayRecord?.checks ?? [];
@@ -35,6 +44,10 @@ export default function HomePage() {
 
   if (!isLoaded) {
     return <div className="px-4 pt-6" />;
+  }
+
+  if (showOnboarding) {
+    return <Onboarding onComplete={() => setShowOnboarding(false)} />;
   }
 
   return (
