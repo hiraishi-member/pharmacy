@@ -2,9 +2,16 @@
   "name": "pharmacy-temp",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^22.23.4"
+  },
   "scripts": {
+    "check:node": "node scripts/check-node-version.mjs",
+    "predev": "npm run check:node",
     "dev": "next dev",
+    "prebuild": "npm run check:node",
     "build": "next build",
+    "prestart": "npm run check:node",
     "start": "next start",
     "lint": "eslint"
   },
